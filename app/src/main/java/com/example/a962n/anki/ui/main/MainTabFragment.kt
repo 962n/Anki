@@ -15,28 +15,30 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainTabFragment : Fragment() {
 
     private lateinit var binding: FragmentMainTabBinding
+    private var selectedNavItem: NavigationItem = NavigationItem.ANKI_SWIPE
 
-    enum class NavigationItem(val id: Int) {
-        HOME(R.id.navigation_home) {
+    enum class NavigationItem(val navId: Int, val titleId: Int) {
+        ANKI_SWIPE(R.id.navigation_home, R.string.title_anki_swipe) {
             override fun getFragment(): Fragment {
                 return AnkiSwipeFragment()
             }
         },
-        NOTIFICATION(R.id.navigation_dashboard){
+        WORD_LIST(R.id.navigation_dashboard, R.string.title_word_list) {
             override fun getFragment(): Fragment {
                 return WordListFragment()
             }
         },
-        MY_PAGE(R.id.navigation_notifications){
+        SETTINGS(R.id.navigation_notifications, R.string.title_settings) {
             override fun getFragment(): Fragment {
                 return SettingsFragment()
             }
         };
+
         abstract fun getFragment(): Fragment
 
         companion object {
-            fun of(id: Int): NavigationItem? {
-                return values().firstOrNull { it.id == id }
+            fun findByNavId(navId: Int): NavigationItem? {
+                return values().firstOrNull { it.navId == navId }
             }
         }
     }
@@ -59,30 +61,34 @@ class MainTabFragment : Fragment() {
     private fun initializeView(binding: FragmentMainTabBinding) {
         this.binding = binding
         binding.navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
-        switchFragment(NavigationItem.HOME)
+        switchFragment(selectedNavItem)
 
     }
 
-    private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+    private val onNavigationItemSelectedListener =
+        BottomNavigationView.OnNavigationItemSelectedListener { item ->
 
-        val navigationItem = NavigationItem.of(item.itemId)
-        if (navigationItem != null){
-            switchFragment(navigationItem)
-            return@OnNavigationItemSelectedListener true
+            val navigationItem = NavigationItem.findByNavId(item.itemId)
+            if (navigationItem != null) {
+                switchFragment(navigationItem)
+                return@OnNavigationItemSelectedListener true
+            }
+            false
         }
-        false
-    }
 
     private fun switchFragment(item: NavigationItem) {
+        selectedNavItem = item
+
+//        binding.layoutToolbar.toolbar.setTitle(item.titleId)
 
         val transaction = childFragmentManager.beginTransaction()
         childFragmentManager.primaryNavigationFragment?.apply {
             transaction.detach(this)
         }
-        var fragment = childFragmentManager.findFragmentByTag(item.id.toString())
+        var fragment = childFragmentManager.findFragmentByTag(item.navId.toString())
         if (fragment == null) {
             fragment = item.getFragment()
-            transaction.add(R.id.container, fragment,item.id.toString())
+            transaction.add(R.id.container, fragment, item.navId.toString())
         } else {
             transaction.attach(fragment)
         }
