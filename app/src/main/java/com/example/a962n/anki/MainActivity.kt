@@ -1,8 +1,10 @@
 package com.example.a962n.anki
 
 import android.os.Bundle
+import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -14,32 +16,32 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
+    private lateinit var navController : NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.toolbar.root.title = "hogehoge"
+        setSupportActionBar(binding.layoutToolbar.toolbar)
 
         val navController = findNavController(R.id.nav_host_fragment)
         val appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.navigation_main_tab))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            val actionbar = supportActionBar
-            actionbar?.isHideOnContentScrollEnabled = false
             when(destination.id) {
-                R.id.navigation_main_tab -> actionbar?.hide()
-                else -> actionbar?.show()
+                R.id.navigation_main_tab -> binding.layoutToolbar.toolbar.visibility = View.GONE
+                else -> binding.layoutToolbar.toolbar.visibility = View.VISIBLE
             }
         }
+        this.navController = navController
+    }
 
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp()
+    }
 
-//        navView.setupWithNavController(navController)
-
-//        val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        navView.setupWithNavController(navController)
+    override fun onNavigateUp(): Boolean {
+        return navController.navigateUp()
     }
 }
