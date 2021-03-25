@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_main_tab"
+    app:startDestination="@+id/nav_anki_swipe">
+
+    <fragment
+        android:id="@+id/nav_anki_swipe"
+        android:name="com.example.a962n.presentation.ankiswipe.AnkiSwipeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_anki_swipe" />
+
+    <fragment
+        android:id="@+id/nav_word_list"
+        android:name="com.example.a962n.presentation.wordlist.WordListFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_word_list" />
+
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.a962n.presentation.settings.SettingsFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

@@ -1,0 +1,6 @@
+include ':presentation:wordedit'
+include ':presentation:settings'
+include ':presentation:wordlist'
+include ':presentation:ankiswipe'
+include ':app'
+rootProject.name = "Anki"

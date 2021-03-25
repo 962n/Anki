@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/navigation_main_tab"
+    android:id="@+id/main_activity">
+
+    <fragment
+        android:id="@+id/navigation_main_tab"
+        android:label="@string/hoge"
+        android:name="com.example.a962n.anki.ui.main.MainTabFragment"
+        tools:layout="@layout/fragment_main_tab" />
+
+    <fragment
+        android:id="@+id/navigation_word_edit"
+        android:name="com.example.a962n.presentation.wordedit.WordEditFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_word_edit" />
+
+
+</navigation>
