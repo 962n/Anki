@@ -60,7 +60,10 @@ class MainTabFragment : Fragment() {
 
     private fun initializeView(binding: FragmentMainTabBinding) {
         this.binding = binding
-        binding.navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+        binding.navView.apply {
+            this.selectedItemId = selectedNavItem.navId
+            this.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+        }
         switchFragment(selectedNavItem)
 
     }
@@ -79,7 +82,7 @@ class MainTabFragment : Fragment() {
     private fun switchFragment(item: NavigationItem) {
         selectedNavItem = item
 
-//        binding.layoutToolbar.toolbar.setTitle(item.titleId)
+        binding.layoutToolbar.toolbar.setTitle(item.titleId)
 
         val transaction = childFragmentManager.beginTransaction()
         childFragmentManager.primaryNavigationFragment?.apply {
