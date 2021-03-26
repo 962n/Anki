@@ -1,3 +1,4 @@
+include ':component:presentation'
 include ':data'
 include ':domain'
 include ':presentation:wordedit'

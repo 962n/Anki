@@ -17,10 +17,10 @@ private class UseCasePrepareImpl<Input> constructor(
     }
 }
 
-interface UseCaseExecutor<out Input, Failure, Success> {
+interface UseCaseExecutor<Input, Failure, Success> {
     fun onFailure(onFailure: (Failure) -> Unit) : UseCaseExecutor<Input, Failure, Success>
     fun onSuccess(onSuccess: (Success) -> Unit) : UseCaseExecutor<Input, Failure, Success>
-    fun run(): Unit
+    fun run()
 }
 
 private class UseCaseExecutorImpl<Input, Failure, Success>
