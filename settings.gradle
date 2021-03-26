@@ -1,3 +1,4 @@
+include ':data'
 include ':domain'
 include ':presentation:wordedit'
 include ':presentation:settings'
