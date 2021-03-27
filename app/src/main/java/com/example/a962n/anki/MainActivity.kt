@@ -28,12 +28,12 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.navigation_main_tab))
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
-            when(destination.id) {
-                R.id.navigation_main_tab -> binding.layoutToolbar.toolbar.visibility = View.GONE
-                else -> binding.layoutToolbar.toolbar.visibility = View.VISIBLE
-            }
-        }
+//        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+//            when(destination.id) {
+//                R.id.navigation_main_tab -> binding.layoutToolbar.toolbar.visibility = View.GONE
+//                else -> binding.layoutToolbar.toolbar.visibility = View.VISIBLE
+//            }
+//        }
         this.navController = navController
     }
 

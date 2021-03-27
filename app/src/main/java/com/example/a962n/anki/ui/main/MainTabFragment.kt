@@ -52,7 +52,7 @@ class MainTabFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = FragmentMainTabBinding.inflate(inflater, container, false)
         initializeView(binding)
         return binding.root
@@ -82,7 +82,7 @@ class MainTabFragment : Fragment() {
     private fun switchFragment(item: NavigationItem) {
         selectedNavItem = item
 
-        binding.layoutToolbar.toolbar.setTitle(item.titleId)
+        activity?.setTitle(item.titleId)
 
         val transaction = childFragmentManager.beginTransaction()
         childFragmentManager.primaryNavigationFragment?.apply {
