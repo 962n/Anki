@@ -7,7 +7,6 @@
 
     <fragment
         android:id="@+id/navigation_main_tab"
-        android:label="@string/hoge"
         android:name="com.example.a962n.anki.ui.main.MainTabFragment"
         tools:layout="@layout/fragment_main_tab" />
 

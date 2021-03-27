@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.a962n.anki.R
 import com.example.a962n.anki.databinding.FragmentMainTabBinding
@@ -82,7 +83,11 @@ class MainTabFragment : Fragment() {
     private fun switchFragment(item: NavigationItem) {
         selectedNavItem = item
 
-        activity?.setTitle(item.titleId)
+
+        val activity = this.activity
+        if (activity is AppCompatActivity) {
+            activity.supportActionBar?.setTitle(item.titleId)
+        }
 
         val transaction = childFragmentManager.beginTransaction()
         childFragmentManager.primaryNavigationFragment?.apply {
