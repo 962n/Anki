@@ -3,6 +3,7 @@ package com.example.a962n.anki.data.datastore.repositoryImpl
 import com.example.a962n.anki.data.datastore.room.AppDatabase
 import com.example.a962n.anki.data.datastore.room.entity.RWordEntity
 import com.example.a962n.anki.domain.core.Either
+import com.example.a962n.anki.domain.entity.AddWordEntity
 import com.example.a962n.anki.domain.entity.WordEntity
 import com.example.a962n.anki.domain.failure.Failure
 import com.example.a962n.anki.domain.repository.WordRepository
@@ -20,8 +21,9 @@ class WordRepositoryImpl(database: AppDatabase) : WordRepository {
         return Either.Right(Unit)
     }
 
-    override fun put(wordEntity: WordEntity): Either<Failure, Unit> {
-        TODO("Not yet implemented")
+    override fun add(addWordEntity: AddWordEntity): Either<Failure, Unit> {
+        wordDao.insertAll(RWordEntity.instance(addWordEntity))
+        return Either.Right(Unit)
     }
 
     override fun fetchPronunciation(word: String): Either<Failure, Unit> {

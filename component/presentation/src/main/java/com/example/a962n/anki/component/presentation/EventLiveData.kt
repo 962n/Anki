@@ -27,7 +27,8 @@ import androidx.lifecycle.*
  * オブザーバーの変更通知は変更が古かったものから順に通知が行われます。
  *
  */
-class EventLiveData<T> : MutableLiveData<T>() {
+class EventLiveData<T>(default:T) : MutableLiveData<T>(default) {
+
 
     companion object {
         private const val START_VERSION = -1
@@ -48,7 +49,7 @@ class EventLiveData<T> : MutableLiveData<T>() {
             holder.pendingIfNeed(version, value)
         }
         if (value != null) {
-            super.setValue(value)
+            super.setValue(value!!)
         }
     }
 

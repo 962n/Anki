@@ -13,11 +13,18 @@ interface RWordDao {
     fun exists(name: String): Boolean
 
     @Insert
-    fun insertAll(vararg words: RWordEntity)
+    fun insertAll(vararg words: RWordEntity): List<Long>
+
+    @Insert
+    fun insertAll(words: List<RWordEntity>): List<Long>
 
     @Delete
     fun delete(word: RWordEntity)
 
-    @Query("SELECT * FROM words ORDER BY name ASC")
-    fun selectOrderNameAsc() : List<RWordEntity>
+    @Query(
+        """
+        SELECT * FROM words ORDER BY name ASC
+        """
+    )
+    fun selectOrderNameAsc(): List<RWordEntity>
 }
