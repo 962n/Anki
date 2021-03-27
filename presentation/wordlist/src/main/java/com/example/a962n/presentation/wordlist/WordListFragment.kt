@@ -1,9 +1,7 @@
 package com.example.a962n.presentation.wordlist
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import com.example.a962n.presentation.wordlist.databinding.FragmentWordListBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -13,14 +11,20 @@ import javax.inject.Inject
 class WordListFragment : Fragment() {
 
     private lateinit var binding: FragmentWordListBinding
+
     @Inject
-    lateinit var navigator : WordListNavigator
+    lateinit var navigator: WordListNavigator
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = FragmentWordListBinding.inflate(inflater, container, false)
         initializeView(binding)
         return binding.root
@@ -28,9 +32,20 @@ class WordListFragment : Fragment() {
 
     private fun initializeView(binding: FragmentWordListBinding) {
         this.binding = binding
-        this.binding.button.setOnClickListener {
-            navigator.toWordEdit()
-        }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.fragment_word_list, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_add_word -> {
+                navigator.toWordEdit()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
