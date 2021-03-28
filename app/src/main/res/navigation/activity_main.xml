@@ -13,7 +13,7 @@
     <fragment
         android:id="@+id/navigation_word_edit"
         android:name="com.example.a962n.presentation.wordedit.WordEditFragment"
-        android:label="@string/title_home"
+        android:label="@string/title_word_edt"
         tools:layout="@layout/fragment_word_edit" />
 
 
