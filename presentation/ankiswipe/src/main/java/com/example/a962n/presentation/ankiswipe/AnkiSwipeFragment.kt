@@ -15,7 +15,7 @@ class AnkiSwipeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = FragmentAnkiSwipeBinding.inflate(inflater, container, false)
         initializeView(binding)
         return binding.root

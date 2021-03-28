@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.a962n.anki.data.datastore.room.dao.RRandomWordDao
 import com.example.a962n.anki.data.datastore.room.dao.RWordDao
 import com.example.a962n.anki.data.datastore.room.entity.RRandomWordEntity
 import com.example.a962n.anki.data.datastore.room.entity.RWordEntity
@@ -17,7 +18,7 @@ import com.example.a962n.anki.data.datastore.room.entity.RWordEntity
 )
 abstract class AppDatabase : RoomDatabase() {
     companion object {
-        private const val DB_NAME = "database-name"
+        private const val DB_NAME = "hoge"
         fun create(context: Context): AppDatabase {
             return Room.databaseBuilder(
                 context,
@@ -26,6 +27,8 @@ abstract class AppDatabase : RoomDatabase() {
             ).build()
         }
     }
+
+    abstract fun randomWordDao(): RRandomWordDao
 
     abstract fun wordDao(): RWordDao
 }
