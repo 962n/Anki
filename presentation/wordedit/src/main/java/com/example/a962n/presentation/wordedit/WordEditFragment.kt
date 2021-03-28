@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.example.a962n.anki.component.presentation.ext.hideIME
 import com.example.a962n.presentation.wordedit.databinding.FragmentWordEditBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -34,6 +35,11 @@ class WordEditFragment : Fragment() {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        this.view?.hideIME()
+        super.onDestroyView()
+    }
+
     private fun initialize() {
         setHasOptionsMenu(true)
         viewModel = ViewModelProvider(this, factory)
@@ -47,7 +53,6 @@ class WordEditFragment : Fragment() {
     private fun initializeView(binding: FragmentWordEditBinding) {
         this.binding = binding
         this.binding.viewModel = viewModel
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

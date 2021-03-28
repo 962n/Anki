@@ -35,22 +35,19 @@ constructor(
 //    @Assisted private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel() {
 
-    private val _textName = MutableLiveData<String>()
-    val textName: MutableLiveData<String> = _textName
+    val textName = MutableLiveData<String>()
 
-    private val _textMeaning = MutableLiveData<String>()
-    val textMeaning: MutableLiveData<String> = _textMeaning
+    val textMeaning = MutableLiveData<String>()
 
-    private val _textExtra = MutableLiveData<String>()
-    val textExtra: MutableLiveData<String> = _textExtra
+    val textExtra = MutableLiveData<String>()
 
 
     fun editWord() {
 
         val param = EditWordUseCase.Param(
-            _textName.value,
-            _textMeaning.value,
-            _textExtra.value
+            textName.value,
+            textMeaning.value,
+            textExtra.value
         )
         useCase(param)
             .onExecute(editWordUseCase::execute)
@@ -58,6 +55,6 @@ constructor(
                 handleEvent(Event.EditSuccess)
             }.onFailure {
                 handleEvent(Event.EditFailed(it))
-            }
+            }.run()
     }
 }

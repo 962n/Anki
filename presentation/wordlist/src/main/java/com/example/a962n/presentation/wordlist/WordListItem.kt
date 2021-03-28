@@ -8,11 +8,7 @@ import com.xwray.groupie.ExpandableItem
 import com.xwray.groupie.viewbinding.BindableItem
 
 data class WordListItem(val wordEntity: WordEntity) :
-    BindableItem<ItemWordListBinding>(wordEntity.id.toLong()) , ExpandableItem {
-
-    override fun setExpandableGroup(onToggleListener: ExpandableGroup) {
-
-    }
+    BindableItem<ItemWordListBinding>(wordEntity.id.toLong()) {
 
     override fun bind(viewBinding: ItemWordListBinding, position: Int) {
         viewBinding.textName.text = wordEntity.name

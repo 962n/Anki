@@ -49,7 +49,7 @@ constructor(
             }
             .onFailure {
                 handleEvent(Event.FetchFailed(Failure.HogeFailure))
-            }
+            }.run()
     }
 
     private fun handleItems(list: List<WordEntity>) {

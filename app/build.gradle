@@ -39,6 +39,8 @@ android {
 
 dependencies {
 
+
+    implementation project(":component:presentation")
     // presentation
     implementation project(":presentation:ankiswipe")
     implementation project(":presentation:wordlist")
