@@ -1,9 +1,7 @@
 package com.example.a962n.presentation.wordedit
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,8 +15,8 @@ class WordEditFragment : Fragment() {
 
     @Inject
     lateinit var factory: WordEditViewModelFactory
-    private lateinit var  viewModel : WordEditViewModel
-    private lateinit var binding :FragmentWordEditBinding
+    private lateinit var viewModel: WordEditViewModel
+    private lateinit var binding: FragmentWordEditBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,15 +35,33 @@ class WordEditFragment : Fragment() {
     }
 
     private fun initialize() {
-        viewModel = ViewModelProvider(this,factory).get(WordEditViewModel::class.java)
-        viewModel.event(this) {
+        setHasOptionsMenu(true)
+        viewModel = ViewModelProvider(this, factory)
+            .get(WordEditViewModel::class.java).apply {
+                this.event(this@WordEditFragment) {
 
-        }
+                }
+            }
     }
 
-    private fun initializeView(binding:FragmentWordEditBinding) {
+    private fun initializeView(binding: FragmentWordEditBinding) {
         this.binding = binding
         this.binding.viewModel = viewModel
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.fragment_word_edit, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_done -> {
+                viewModel.editWord()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
