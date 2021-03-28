@@ -47,8 +47,17 @@ constructor(
             .onExecute(editWordUseCase::execute)
             .onSuccess {
                 handleEvent(Event.EditSuccess)
+                reset()
             }.onFailure {
                 handleEvent(Event.EditFailed(it))
             }.run()
     }
+
+    private fun reset() {
+        textName.value = ""
+        textMeaning.value = ""
+        textExtra.value = ""
+    }
+
+
 }

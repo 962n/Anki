@@ -39,21 +39,6 @@ class WordEditFragment : Fragment() {
         super.onDestroyView()
     }
 
-    private fun initialize() {
-        setHasOptionsMenu(true)
-        viewModel = ViewModelProvider(this, factory)
-            .get(WordEditViewModel::class.java).apply {
-                this.event(this@WordEditFragment) {
-
-                }
-            }
-    }
-
-    private fun initializeView(binding: FragmentWordEditBinding) {
-        this.binding = binding
-        this.binding.viewModel = viewModel
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.fragment_word_edit, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -68,4 +53,22 @@ class WordEditFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private fun initialize() {
+        setHasOptionsMenu(true)
+        viewModel = ViewModelProvider(this, factory)
+            .get(WordEditViewModel::class.java).apply {
+                this.event(this@WordEditFragment) {
+
+                }
+            }
+    }
+
+    private fun initializeView(binding: FragmentWordEditBinding) {
+        this.binding = binding.apply {
+            this.lifecycleOwner = viewLifecycleOwner
+            this.viewModel = this@WordEditFragment.viewModel
+        }
+    }
+
 }
