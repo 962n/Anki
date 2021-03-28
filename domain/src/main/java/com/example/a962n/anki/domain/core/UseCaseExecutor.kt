@@ -20,6 +20,7 @@ private class UseCasePrepareImpl<Input> constructor(
 interface UseCaseExecutor<Input, Failure, Success> {
     fun onFailure(onFailure: (Failure) -> Unit) : UseCaseExecutor<Input, Failure, Success>
     fun onSuccess(onSuccess: (Success) -> Unit) : UseCaseExecutor<Input, Failure, Success>
+    fun onFinally(onFinally: () -> Unit) : UseCaseExecutor<Input, Failure, Success>
     fun run()
 }
 
@@ -31,6 +32,7 @@ constructor(
 
     private var onFailure: ((Failure) -> Unit)? = null
     private var onSuccess: ((Success) -> Unit)? = null
+    private var onFinally: (() -> Unit)? = null
 
     override fun onFailure(onFailure: (Failure) -> Unit) : UseCaseExecutor<Input, Failure, Success>{
         this.onFailure = onFailure
@@ -42,6 +44,11 @@ constructor(
         return this
     }
 
+    override fun onFinally(onFinally: () -> Unit): UseCaseExecutor<Input, Failure, Success> {
+        this.onFinally = onFinally
+        return this
+    }
+
     override fun run() {
         val onExecute = this.onExecute
         val job = GlobalScope.async(Dispatchers.IO) {
@@ -49,6 +56,7 @@ constructor(
         }
         GlobalScope.launch(Dispatchers.Main) {
             val either = job.await()
+            onFinally?.invoke()
             either.onSuccess {
                 this@UseCaseExecutorImpl.onSuccess?.invoke(it)
             }.onFailure {
