@@ -5,10 +5,7 @@ import com.example.a962n.anki.data.datastore.repositoryImpl.IndexWordsRepository
 import com.example.a962n.anki.data.datastore.repositoryImpl.WordRepositoryImpl
 import com.example.a962n.anki.data.datastore.room.AppDatabase
 import com.example.a962n.anki.domain.repository.WordRepository
-import com.example.a962n.anki.domain.useCase.AddWordUseCaseImpl
-import com.example.a962n.anki.domain.useCase.EditWordUseCase
-import com.example.a962n.anki.domain.useCase.GetWordsUseCase
-import com.example.a962n.anki.domain.useCase.GetWordsUseCaseImpl
+import com.example.a962n.anki.domain.useCase.*
 import com.example.a962n.anki.navigatorImpl.WordListNavigatorImpl
 import com.example.a962n.presentation.wordlist.WordListNavigator
 import com.example.a962n.presentation.wordlist.WordListViewModelFactory
@@ -30,7 +27,11 @@ class WordListFragmentModule {
     fun provideWordListViewModelFactory(fragment: Fragment): WordListViewModelFactory {
         val appDatabase = AppDatabase.create(fragment.requireContext())
         val getWordsUseCase = GetWordsUseCaseImpl(IndexWordsRepositoryImpl(appDatabase))
-        return WordListViewModelFactory(getWordsUseCase)
+        val deleteWordUseCase = DeleteWordUseCaseImpl(WordRepositoryImpl(appDatabase))
+        return WordListViewModelFactory(
+            getWordsUseCase,
+            deleteWordUseCase
+        )
     }
 
 

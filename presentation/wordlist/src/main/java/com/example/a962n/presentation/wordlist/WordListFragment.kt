@@ -97,6 +97,9 @@ class WordListFragment : Fragment() {
             is Event.Loading -> {
                 binding.swipeRefresh.isRefreshing = event.isLoading
             }
+            is Event.DeletedItem -> {
+                adapter.remove(WordListItem(event.entity))
+            }
             else -> {
                 // do nothing
             }
@@ -117,13 +120,14 @@ class WordListFragment : Fragment() {
         val context = this.context ?: return
         PopupMenu(context, anchor).apply {
             this.inflate(R.menu.fragment_word_list_popup)
-            this.gravity = Gravity.RIGHT
+            this.gravity = Gravity.END
             this.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.menu_edit_word -> {
                         true
                     }
                     R.id.menu_delete_word -> {
+                        viewModel.deleteItem(item.wordEntity)
                         true
                     }
                     else -> false
