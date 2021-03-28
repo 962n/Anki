@@ -2,6 +2,7 @@ package com.example.a962n.presentation.wordlist
 
 import android.os.Bundle
 import android.view.*
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,6 +45,21 @@ class WordListFragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.fragment_word_list, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_add_word -> {
+                navigator.toWordEdit()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun initialize() {
         setHasOptionsMenu(true)
         viewModel = ViewModelProvider(this, factory)
@@ -52,6 +68,28 @@ class WordListFragment : Fragment() {
                 this.event(this@WordListFragment, ::handleEvents)
                 observe(this.items, ::handleItems)
             }
+        adapter.setOnItemLongClickListener { item, view ->
+            when (item) {
+                is WordListItem -> {
+                    showPopupMenu(item, view)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun initializeView(binding: FragmentWordListBinding) {
+        this.binding = binding
+        binding.swipeRefresh.apply {
+            this.setOnRefreshListener {
+                viewModel.fetchAll()
+            }
+        }
+        binding.recyclerView.apply {
+            this.adapter = this@WordListFragment.adapter
+            this.layoutManager = LinearLayoutManager(this.context)
+        }
     }
 
     private fun handleEvents(event: BaseViewModel.ViewModelEvent) {
@@ -75,31 +113,24 @@ class WordListFragment : Fragment() {
             }.run()
     }
 
-    private fun initializeView(binding: FragmentWordListBinding) {
-        this.binding = binding
-        binding.swipeRefresh.apply {
-            this.setOnRefreshListener {
-                viewModel.fetchAll()
+    private fun showPopupMenu(item: WordListItem, anchor: View) {
+        val context = this.context ?: return
+        PopupMenu(context, anchor).apply {
+            this.inflate(R.menu.fragment_word_list_popup)
+            this.gravity = Gravity.RIGHT
+            this.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.menu_edit_word -> {
+                        true
+                    }
+                    R.id.menu_delete_word -> {
+                        true
+                    }
+                    else -> false
+                }
             }
-        }
-        binding.recyclerView.apply {
-            this.adapter = this@WordListFragment.adapter
-            this.layoutManager = LinearLayoutManager(this.context)
-        }
+        }.show()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.fragment_word_list, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_add_word -> {
-                navigator.toWordEdit()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
 }
