@@ -1,14 +1,11 @@
 package com.example.a962n.presentation.wordlist
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.example.a962n.anki.component.presentation.BaseViewModel
 import com.example.a962n.anki.domain.core.useCase
 import com.example.a962n.anki.domain.entity.WordEntity
 import com.example.a962n.anki.domain.failure.Failure
 import com.example.a962n.anki.domain.useCase.GetWordsUseCase
-import javax.inject.Inject
-
 
 sealed class Event : BaseViewModel.ViewModelEvent.FeatureViewModelEvent() {
     data class Loading(val isLoading: Boolean) : Event()
@@ -17,7 +14,6 @@ sealed class Event : BaseViewModel.ViewModelEvent.FeatureViewModelEvent() {
 
 @Suppress("UNCHECKED_CAST")
 class WordListViewModelFactory
-@Inject
 constructor(
     private val getWordsUseCase: GetWordsUseCase
 ) : ViewModelProvider.Factory {
@@ -27,7 +23,6 @@ constructor(
 }
 
 class WordListViewModel
-@ViewModelInject
 constructor(
     private val getWordsUseCase: GetWordsUseCase
 ) : BaseViewModel() {

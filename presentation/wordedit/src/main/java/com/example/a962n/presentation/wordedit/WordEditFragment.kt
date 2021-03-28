@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.a962n.anki.component.presentation.ext.hideIME
 import com.example.a962n.presentation.wordedit.databinding.FragmentWordEditBinding
