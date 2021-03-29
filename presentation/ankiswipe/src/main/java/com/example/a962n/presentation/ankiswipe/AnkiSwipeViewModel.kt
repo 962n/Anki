@@ -31,6 +31,16 @@ constructor(
     private val _item = MutableLiveData<List<WordEntity>>()
     val item: LiveData<List<WordEntity>> = _item
 
+    fun fetchAll() {
+        useCase(GetWordsUseCase.Param())
+            .onExecute(getWordsUseCase::execute)
+            .onSuccess {
+                _item.value = it
+            }.onFailure {
+                // do nothing
+            }.run()
+    }
+
     fun shuffle() {
         useCase(ShuffleWordsUseCase.Param())
             .onExecute {

@@ -7,8 +7,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.a962n.anki.component.presentation.BaseViewModel
 import com.example.a962n.anki.component.presentation.ext.observe
+import com.example.a962n.anki.domain.core.simpleUseCase
 import com.example.a962n.anki.domain.entity.WordEntity
 import com.example.a962n.presentation.ankiswipe.databinding.FragmentAnkiSwipeBinding
+import com.xwray.groupie.GroupieAdapter
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager
+import com.yuyakaido.android.cardstackview.CardStackListener
+import com.yuyakaido.android.cardstackview.Direction
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -22,10 +27,12 @@ class AnkiSwipeFragment : Fragment() {
     lateinit var factory: AnkiSwipeViewModelFactory
 
     lateinit var viewModel: AnkiSwipeViewModel
+    private val adapter = GroupieAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initialize()
+        viewModel.fetchAll()
     }
 
     override fun onCreateView(
@@ -65,6 +72,21 @@ class AnkiSwipeFragment : Fragment() {
 
     private fun initializeView(binding: FragmentAnkiSwipeBinding) {
         this.binding = binding
+        this.binding.cardStackView.apply {
+            val listener = object : CardStackListener {
+                override fun onCardDragging(direction: Direction?, ratio: Float) {}
+                override fun onCardSwiped(direction: Direction?) {}
+                override fun onCardRewound() {}
+                override fun onCardCanceled() {}
+                override fun onCardAppeared(view: View?, position: Int) {
+                }
+
+                override fun onCardDisappeared(view: View?, position: Int) {
+                }
+            }
+            this.layoutManager = CardStackLayoutManager(this.context, listener)
+            this.adapter = this@AnkiSwipeFragment.adapter
+        }
     }
 
     private fun handleEvent(event: BaseViewModel.ViewModelEvent) {
@@ -72,10 +94,13 @@ class AnkiSwipeFragment : Fragment() {
     }
 
     private fun handleItems(items: List<WordEntity>) {
-        items.forEach {
-            Log.d("kurokawa", it.id.toString() + " " + it.name)
-        }
-
+        simpleUseCase(items)
+            .onExecute { list ->
+                list.map { AnkiSwipeItem(it) }
+            }.onComplete {
+                adapter.clear()
+                adapter.addAll(it)
+            }.run()
     }
 
 }
