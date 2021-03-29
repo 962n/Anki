@@ -1,8 +1,10 @@
 package com.example.a962n.presentation.ankiswipe
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.example.a962n.anki.component.presentation.BaseViewModel
+import com.example.a962n.anki.domain.core.rightFlatMap
+import com.example.a962n.anki.domain.core.useCase
+import com.example.a962n.anki.domain.entity.WordEntity
 import com.example.a962n.anki.domain.useCase.GetWordsUseCase
 import com.example.a962n.anki.domain.useCase.ShuffleWordsUseCase
 
@@ -25,5 +27,29 @@ constructor(
     private val getWordsUseCase: GetWordsUseCase,
     private val shuffleWordsUseCase: ShuffleWordsUseCase
 ) : BaseViewModel() {
+
+    private val _item = MutableLiveData<List<WordEntity>>()
+    val item: LiveData<List<WordEntity>> = _item
+
+    fun shuffle() {
+        useCase(ShuffleWordsUseCase.Param())
+            .onExecute {
+                shuffleWordsUseCase
+                    .execute(it)
+                    .rightFlatMap {
+                        getWordsUseCase.execute(GetWordsUseCase.Param())
+                    }
+            }.onFinally {
+            }.onSuccess {
+                _item.value = it
+            }.onFailure {
+
+            }.run()
+    }
+
+    fun swipe(correct: Boolean) {
+
+    }
+
 
 }
