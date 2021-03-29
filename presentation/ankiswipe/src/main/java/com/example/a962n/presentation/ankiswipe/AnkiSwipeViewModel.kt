@@ -39,6 +39,7 @@ constructor(
 ) : BaseViewModel() {
 
     private val _item = mutableListOf<WordEntity>()
+    val item = _item.toList()
 
     fun fetchAll() {
         useCase(GetWordsUseCase.Param())
@@ -82,10 +83,16 @@ constructor(
     fun swipe(correct: Boolean) {
         val target = _item.firstOrNull() ?: return
         _item.removeAt(0)
+
         useCase(SwipeWordUseCase.Param(target))
-            .onExecute(swipeWordUseCase::execute)
+            .onExecute{
+                swipeWordUseCase.execute(it).rightMap{
+                    Thread.sleep(1000)
+                }
+            }
             .onSuccess {
-                handleEvent(Event.Swiped(target))
+                handleEvent(Event.Fetched(_item))
+//                handleEvent(Event.Swiped(target))
             }.onFailure {
             }.run()
     }

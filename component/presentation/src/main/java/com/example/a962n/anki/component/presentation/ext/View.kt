@@ -1,7 +1,9 @@
 package com.example.a962n.anki.component.presentation.ext
 
 import android.content.Context
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat.getSystemService
 
@@ -20,6 +22,15 @@ fun View.setVisibleOrGone(isVisible: Boolean) {
         false -> gone()
     }
 }
+
+/**
+ * LayoutInflaterを取得する。
+ *
+ * HACK:RecyclerView.Adapterクラスに対して、inflater生成のために毎回contextクラスを渡さなくて良いようにするため
+ *
+ * @return LayoutInflater LayoutInflaterクラス
+ */
+fun ViewGroup.inflater(): LayoutInflater = LayoutInflater.from(context)
 
 /**
  * ソフトキーボードを非表示にする

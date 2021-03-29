@@ -1,7 +1,9 @@
 package com.example.a962n.presentation.ankiswipe
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.view.animation.AccelerateInterpolator
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.a962n.anki.component.presentation.BaseViewModel
@@ -9,10 +11,7 @@ import com.example.a962n.anki.domain.core.simpleUseCase
 import com.example.a962n.anki.domain.entity.WordEntity
 import com.example.a962n.presentation.ankiswipe.databinding.FragmentAnkiSwipeBinding
 import com.xwray.groupie.GroupieAdapter
-import com.yuyakaido.android.cardstackview.CardStackLayoutManager
-import com.yuyakaido.android.cardstackview.CardStackListener
-import com.yuyakaido.android.cardstackview.Direction
-import com.yuyakaido.android.cardstackview.StackFrom
+import com.yuyakaido.android.cardstackview.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -25,8 +24,11 @@ class AnkiSwipeFragment : Fragment() {
     @Inject
     lateinit var factory: AnkiSwipeViewModelFactory
 
-    lateinit var viewModel: AnkiSwipeViewModel
-    private val adapter = GroupieAdapter()
+    private lateinit var viewModel: AnkiSwipeViewModel
+//    private var adapter = GroupieAdapter()
+    private var adapter = AnkiSwipeAdapter()
+    private val bindItems = mutableListOf<AnkiSwipeItem>()
+    private lateinit var cardStackLayoutManager: CardStackLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +72,10 @@ class AnkiSwipeFragment : Fragment() {
 
     private fun initializeView(binding: FragmentAnkiSwipeBinding) {
         this.binding = binding
-        this.binding.cardStackView.apply {
+//        adapter = GroupieAdapter().apply {
+//            this.addAll(bindItems)
+//        }
+        binding.cardStackView.apply {
             val listener = object : CardStackListener {
                 override fun onCardDragging(direction: Direction?, ratio: Float) {}
                 override fun onCardRewound() {}
@@ -81,16 +86,55 @@ class AnkiSwipeFragment : Fragment() {
                     viewModel.swipe(true)
                 }
             }
-            this.layoutManager = CardStackLayoutManager(this.context, listener).apply {
+            cardStackLayoutManager = CardStackLayoutManager(this.context, listener).apply {
                 this.setStackFrom(StackFrom.Top)
             }
+            this.layoutManager = cardStackLayoutManager
             this.adapter = this@AnkiSwipeFragment.adapter
         }
+
+        binding.buttonWrong.setOnClickListener {
+            onClickSwipeButton(false)
+        }
+
+        binding.buttonCorrect.setOnClickListener {
+            onClickSwipeButton(true)
+        }
+
+        binding.buttonTurnOver.setOnClickListener {
+            when (adapter.itemCount > 0) {
+                true -> {
+//                    val item = adapter.getItem(0)
+//                    if (item is AnkiSwipeItem) {
+//                        item.turnOver()
+//                    }
+                }
+                false -> {
+                    // do nothing
+                }
+            }
+
+        }
+    }
+    private fun onClickSwipeButton(correct:Boolean) {
+        val direction = when(correct) {
+            true -> Direction.Right
+            false -> Direction.Left
+        }
+        val setting = SwipeAnimationSetting.Builder()
+            .setDirection(direction)
+            .setDuration(Duration.Normal.duration)
+            .setInterpolator(AccelerateInterpolator())
+            .build()
+        cardStackLayoutManager.setSwipeAnimationSetting(setting)
+        binding.cardStackView.swipe()
     }
 
     private fun handleEvent(event: BaseViewModel.ViewModelEvent) {
         when (event) {
-            is Event.Swiped -> adapter.remove(AnkiSwipeItem(event.target))
+            is Event.Swiped -> {
+                bindItems.removeAt(0)
+            }
             is Event.Fetched -> handleFetchItems(event.items)
             else -> {
                 //do nothing
@@ -99,13 +143,16 @@ class AnkiSwipeFragment : Fragment() {
     }
 
     private fun handleFetchItems(items: List<WordEntity>) {
-        simpleUseCase(items)
-            .onExecute { list ->
-                list.map { AnkiSwipeItem(it) }
-            }.onComplete {
-                adapter.clear()
-                adapter.addAll(it)
-            }.run()
+        adapter.collection = items
+//        simpleUseCase(items)
+//            .onExecute { list ->
+//                list.map { AnkiSwipeItem(it) }
+//            }.onComplete {
+//                bindItems.clear()
+//                bindItems.addAll(it)
+//                adapter.clear()
+//                adapter.addAll(it)
+//            }.run()
     }
 
 }
