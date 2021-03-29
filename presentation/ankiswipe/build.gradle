@@ -41,6 +41,9 @@ dependencies {
     implementation project(":domain")
     implementation project(":component:presentation")
 
+    implementation "com.yuyakaido.android:card-stack-view:2.3.4"
+
+    // TODO あとで消す
     def groupie_version = "2.9.0"
     implementation "com.xwray:groupie:$groupie_version"
     implementation "com.xwray:groupie-viewbinding:$groupie_version"
