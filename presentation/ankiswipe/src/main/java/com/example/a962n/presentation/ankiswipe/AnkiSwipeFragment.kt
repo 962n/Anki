@@ -1,7 +1,6 @@
 package com.example.a962n.presentation.ankiswipe
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.animation.AccelerateInterpolator
 import androidx.fragment.app.Fragment
@@ -25,9 +24,9 @@ class AnkiSwipeFragment : Fragment() {
     lateinit var factory: AnkiSwipeViewModelFactory
 
     private lateinit var viewModel: AnkiSwipeViewModel
-//    private var adapter = GroupieAdapter()
-    private var adapter = AnkiSwipeAdapter()
-    private val bindItems = mutableListOf<AnkiSwipeItem>()
+
+    private var adapter = GroupieAdapter()
+
     private lateinit var cardStackLayoutManager: CardStackLayoutManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,27 +67,40 @@ class AnkiSwipeFragment : Fragment() {
             .apply {
                 this.event(this@AnkiSwipeFragment, ::handleEvent)
             }
+
+        val listener = object : CardStackListener {
+            override fun onCardDragging(direction: Direction?, ratio: Float) {}
+            override fun onCardRewound() {}
+            override fun onCardCanceled() {}
+            override fun onCardAppeared(view: View?, position: Int) {}
+            override fun onCardDisappeared(view: View?, position: Int) {}
+            override fun onCardSwiped(direction: Direction?) {
+                val position = cardStackLayoutManager.topPosition - 1
+                val correct = direction == Direction.Right
+                viewModel.swipe(position, correct)
+            }
+        }
+        cardStackLayoutManager = CardStackLayoutManager(context, listener).apply {
+            this.setStackFrom(StackFrom.Top)
+        }
     }
 
     private fun initializeView(binding: FragmentAnkiSwipeBinding) {
         this.binding = binding
-//        adapter = GroupieAdapter().apply {
-//            this.addAll(bindItems)
-//        }
         binding.cardStackView.apply {
-            val listener = object : CardStackListener {
-                override fun onCardDragging(direction: Direction?, ratio: Float) {}
-                override fun onCardRewound() {}
-                override fun onCardCanceled() {}
-                override fun onCardAppeared(view: View?, position: Int) {}
-                override fun onCardDisappeared(view: View?, position: Int) {}
-                override fun onCardSwiped(direction: Direction?) {
-                    viewModel.swipe(true)
+            this.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener{
+                override fun onViewAttachedToWindow(p0: View?) {
                 }
-            }
-            cardStackLayoutManager = CardStackLayoutManager(this.context, listener).apply {
-                this.setStackFrom(StackFrom.Top)
-            }
+                override fun onViewDetachedFromWindow(p0: View?) {
+                    // Note
+                    // Fragmentが死ぬまで表示位置を保持したいためCardStackLayoutManagerを使いまわしているが
+                    // 一度CardStackViewにセットしたManagerをもう一度別のCardStackViewにセットするとクラッシュする。
+                    // そのため、Detachのタイミングで破棄されるCardStackViewに対してダミーのCardStackLayoutManagerを設定している。
+                    // 本来であればnullを設定したいが、その場合OSS側でExceptionを吐くため、この形をとっている。
+                    this@apply.layoutManager = CardStackLayoutManager(p0?.context)
+                    this@apply.removeOnAttachStateChangeListener(this)
+                }
+            })
             this.layoutManager = cardStackLayoutManager
             this.adapter = this@AnkiSwipeFragment.adapter
         }
@@ -102,22 +114,23 @@ class AnkiSwipeFragment : Fragment() {
         }
 
         binding.buttonTurnOver.setOnClickListener {
-            when (adapter.itemCount > 0) {
-                true -> {
-//                    val item = adapter.getItem(0)
-//                    if (item is AnkiSwipeItem) {
-//                        item.turnOver()
-//                    }
-                }
-                false -> {
-                    // do nothing
-                }
-            }
-
+            onClickTurnOver()
         }
     }
-    private fun onClickSwipeButton(correct:Boolean) {
-        val direction = when(correct) {
+
+    private fun onClickTurnOver() {
+        val position = cardStackLayoutManager.topPosition
+        if (position > adapter.itemCount - 1) {
+            return
+        }
+        val item = adapter.getItem(position)
+        if (item is AnkiSwipeItem) {
+            item.turnOver()
+        }
+    }
+
+    private fun onClickSwipeButton(correct: Boolean) {
+        val direction = when (correct) {
             true -> Direction.Right
             false -> Direction.Left
         }
@@ -132,8 +145,8 @@ class AnkiSwipeFragment : Fragment() {
 
     private fun handleEvent(event: BaseViewModel.ViewModelEvent) {
         when (event) {
-            is Event.Swiped -> {
-                bindItems.removeAt(0)
+            is Event.SwipeFailed -> {
+//                bindItems.removeAt(0)
             }
             is Event.Fetched -> handleFetchItems(event.items)
             else -> {
@@ -143,16 +156,13 @@ class AnkiSwipeFragment : Fragment() {
     }
 
     private fun handleFetchItems(items: List<WordEntity>) {
-        adapter.collection = items
-//        simpleUseCase(items)
-//            .onExecute { list ->
-//                list.map { AnkiSwipeItem(it) }
-//            }.onComplete {
-//                bindItems.clear()
-//                bindItems.addAll(it)
-//                adapter.clear()
-//                adapter.addAll(it)
-//            }.run()
+        simpleUseCase(items)
+            .onExecute { list ->
+                list.map { AnkiSwipeItem(it) }
+            }.onComplete {
+                adapter.clear()
+                adapter.addAll(it)
+            }.run()
     }
 
 }
