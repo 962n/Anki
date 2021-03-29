@@ -1,12 +1,10 @@
 package com.example.a962n.presentation.ankiswipe
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.a962n.anki.component.presentation.BaseViewModel
-import com.example.a962n.anki.component.presentation.ext.observe
 import com.example.a962n.anki.domain.core.simpleUseCase
 import com.example.a962n.anki.domain.entity.WordEntity
 import com.example.a962n.presentation.ankiswipe.databinding.FragmentAnkiSwipeBinding
@@ -14,6 +12,7 @@ import com.xwray.groupie.GroupieAdapter
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager
 import com.yuyakaido.android.cardstackview.CardStackListener
 import com.yuyakaido.android.cardstackview.Direction
+import com.yuyakaido.android.cardstackview.StackFrom
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -66,7 +65,6 @@ class AnkiSwipeFragment : Fragment() {
             .get(AnkiSwipeViewModel::class.java)
             .apply {
                 this.event(this@AnkiSwipeFragment, ::handleEvent)
-                observe(this.item, ::handleItems)
             }
     }
 
@@ -75,25 +73,32 @@ class AnkiSwipeFragment : Fragment() {
         this.binding.cardStackView.apply {
             val listener = object : CardStackListener {
                 override fun onCardDragging(direction: Direction?, ratio: Float) {}
-                override fun onCardSwiped(direction: Direction?) {}
                 override fun onCardRewound() {}
                 override fun onCardCanceled() {}
-                override fun onCardAppeared(view: View?, position: Int) {
-                }
-
-                override fun onCardDisappeared(view: View?, position: Int) {
+                override fun onCardAppeared(view: View?, position: Int) {}
+                override fun onCardDisappeared(view: View?, position: Int) {}
+                override fun onCardSwiped(direction: Direction?) {
+                    viewModel.swipe(true)
                 }
             }
-            this.layoutManager = CardStackLayoutManager(this.context, listener)
+            this.layoutManager = CardStackLayoutManager(this.context, listener).apply {
+                this.setStackFrom(StackFrom.Top)
+            }
             this.adapter = this@AnkiSwipeFragment.adapter
         }
     }
 
     private fun handleEvent(event: BaseViewModel.ViewModelEvent) {
-
+        when (event) {
+            is Event.Swiped -> adapter.remove(AnkiSwipeItem(event.target))
+            is Event.Fetched -> handleFetchItems(event.items)
+            else -> {
+                //do nothing
+            }
+        }
     }
 
-    private fun handleItems(items: List<WordEntity>) {
+    private fun handleFetchItems(items: List<WordEntity>) {
         simpleUseCase(items)
             .onExecute { list ->
                 list.map { AnkiSwipeItem(it) }

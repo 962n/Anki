@@ -6,6 +6,8 @@ import com.example.a962n.anki.data.datastore.repositoryImpl.RandomWordsRepositor
 import com.example.a962n.anki.data.datastore.room.AppDatabase
 import com.example.a962n.anki.domain.useCase.GetRandomWordsUseCaseImpl
 import com.example.a962n.anki.domain.useCase.ShuffleWordsUseCaseImpl
+import com.example.a962n.anki.domain.useCase.SwipeWordUseCase
+import com.example.a962n.anki.domain.useCase.SwipeWordUseCaseImpl
 import com.example.a962n.presentation.ankiswipe.AnkiSwipeViewModelFactory
 import dagger.Module
 import dagger.Provides
@@ -26,7 +28,12 @@ class AnkiSwipeFragmentModule {
             indexWordsRepository,
             randomWordsRepository
         )
-        return AnkiSwipeViewModelFactory(getWordUseCase, shuffleWordsUseCase)
+        val swipeWordUseCase = SwipeWordUseCaseImpl(randomWordsRepository)
+        return AnkiSwipeViewModelFactory(
+            getWordUseCase,
+            shuffleWordsUseCase,
+            swipeWordUseCase
+        )
     }
 
 

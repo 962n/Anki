@@ -11,7 +11,7 @@ import com.example.a962n.anki.domain.repository.RandomWordsRepository
 class RandomWordsRepositoryImpl
 constructor(
     database: AppDatabase
-): RandomWordsRepository {
+) : RandomWordsRepository {
     private val randomWordDao = database.randomWordDao()
 
     override fun fetchAll(): Either<Failure, List<WordEntity>> {
@@ -22,7 +22,8 @@ constructor(
     }
 
     override fun swipe(wordEntity: WordEntity): Either<Failure, Unit> {
-        TODO("Not yet implemented")
+        randomWordDao.updateSwiped(wordEntity.id, true)
+        return Either.Right(Unit)
     }
 
     override fun deleteAll(): Either<Failure, Unit> {

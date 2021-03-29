@@ -3,43 +3,61 @@ package com.example.a962n.presentation.ankiswipe
 import androidx.lifecycle.*
 import com.example.a962n.anki.component.presentation.BaseViewModel
 import com.example.a962n.anki.domain.core.rightFlatMap
+import com.example.a962n.anki.domain.core.rightMap
 import com.example.a962n.anki.domain.core.useCase
 import com.example.a962n.anki.domain.entity.WordEntity
 import com.example.a962n.anki.domain.useCase.GetWordsUseCase
 import com.example.a962n.anki.domain.useCase.ShuffleWordsUseCase
+import com.example.a962n.anki.domain.useCase.SwipeWordUseCase
 
 sealed class Event : BaseViewModel.ViewModelEvent.FeatureViewModelEvent() {
+    data class Swiped(val target: WordEntity) : Event()
+    data class Fetched(val items: List<WordEntity>) : Event()
 }
 
 @Suppress("UNCHECKED_CAST")
 class AnkiSwipeViewModelFactory
 constructor(
     private val getWordsUseCase: GetWordsUseCase,
-    private val shuffleWordsUseCase: ShuffleWordsUseCase
+    private val shuffleWordsUseCase: ShuffleWordsUseCase,
+    private val swipeWordUseCase: SwipeWordUseCase,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return AnkiSwipeViewModel(getWordsUseCase, shuffleWordsUseCase) as T
+        return AnkiSwipeViewModel(
+            getWordsUseCase,
+            shuffleWordsUseCase,
+            swipeWordUseCase
+        ) as T
     }
 }
 
 class AnkiSwipeViewModel
 constructor(
     private val getWordsUseCase: GetWordsUseCase,
-    private val shuffleWordsUseCase: ShuffleWordsUseCase
+    private val shuffleWordsUseCase: ShuffleWordsUseCase,
+    private val swipeWordUseCase: SwipeWordUseCase,
 ) : BaseViewModel() {
 
-    private val _item = MutableLiveData<List<WordEntity>>()
-    val item: LiveData<List<WordEntity>> = _item
+    private val _item = mutableListOf<WordEntity>()
 
     fun fetchAll() {
         useCase(GetWordsUseCase.Param())
-            .onExecute(getWordsUseCase::execute)
+            .onExecute { param ->
+                getWordsUseCase
+                    .execute(param)
+                    .rightMap { list ->
+                        _item.clear()
+                        _item.addAll(list)
+                        list
+                    }
+            }
             .onSuccess {
-                _item.value = it
+                handleEvent(Event.Fetched(it))
             }.onFailure {
                 // do nothing
             }.run()
     }
+
 
     fun shuffle() {
         useCase(ShuffleWordsUseCase.Param())
@@ -48,18 +66,27 @@ constructor(
                     .execute(it)
                     .rightFlatMap {
                         getWordsUseCase.execute(GetWordsUseCase.Param())
+                    }.rightMap { list ->
+                        _item.clear()
+                        _item.addAll(list)
+                        list
                     }
             }.onFinally {
             }.onSuccess {
-                _item.value = it
+                handleEvent(Event.Fetched(it))
             }.onFailure {
 
             }.run()
     }
 
     fun swipe(correct: Boolean) {
-
+        val target = _item.firstOrNull() ?: return
+        _item.removeAt(0)
+        useCase(SwipeWordUseCase.Param(target))
+            .onExecute(swipeWordUseCase::execute)
+            .onSuccess {
+                handleEvent(Event.Swiped(target))
+            }.onFailure {
+            }.run()
     }
-
-
 }
