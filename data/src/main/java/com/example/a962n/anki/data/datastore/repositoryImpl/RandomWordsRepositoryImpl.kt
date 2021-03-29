@@ -15,7 +15,7 @@ constructor(
     private val randomWordDao = database.randomWordDao()
 
     override fun fetchAll(): Either<Failure, List<WordEntity>> {
-        val list = randomWordDao.selectBySwiped(true).map {
+        val list = randomWordDao.selectBySwiped(false).map {
             WordEntity.instance(it)
         }
         return Either.Right(list)

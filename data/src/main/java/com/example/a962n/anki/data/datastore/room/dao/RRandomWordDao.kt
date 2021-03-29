@@ -25,8 +25,14 @@ interface RRandomWordDao {
         SELECT * FROM words 
         INNER JOIN random_words ON words.id = random_words.word_id
         WHERE random_words.swiped = :swiped
+        ORDER BY random_words.id ASC
     """)
     fun selectBySwiped(swiped:Boolean) : List<RWordEntity>
 
+
+    @Query("""
+        SELECT * FROM random_words 
+    """)
+    fun selectAll() : List<RRandomWordEntity>
 
 }

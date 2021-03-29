@@ -24,22 +24,4 @@ class ExampleInstrumentedTest {
         assertEquals("com.example.a962n.anki.data.test", appContext.packageName)
     }
 
-    @Test
-    fun hoge() = roomTesting {
-        var exists = it.wordDao().exists("hoge")
-        val rWordEntity = RWordEntity(
-            name = "hoge",
-            meaning = "",
-            extra = ""
-        )
-        assertFalse(exists)
-        val ids = it.wordDao().insertAll(rWordEntity)
-        ids.forEach {
-            println(it.toString())
-        }
-        exists = it.wordDao().exists("hoge")
-        assertTrue(exists)
-
-    }
-
 }
