@@ -45,7 +45,6 @@ class SettingsFragment : Fragment() {
 
                 }
             }
-
     }
 
     private fun initializeView(binding: FragmentSettingsBinding) {
