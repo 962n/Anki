@@ -5,7 +5,9 @@ import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.a962n.anki.component.presentation.dialog.ProgressDialog
 import com.example.a962n.anki.component.presentation.ext.hideIME
+import com.example.a962n.anki.component.presentation.ext.observe
 import com.example.a962n.presentation.wordedit.databinding.FragmentWordEditBinding
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -60,6 +62,12 @@ class WordEditFragment : Fragment() {
             .get(WordEditViewModel::class.java).apply {
                 this.event(this@WordEditFragment) {
 
+                }
+                observe(this.isLoading) {
+                    when (it) {
+                        true -> ProgressDialog.show(parentFragmentManager)
+                        false -> ProgressDialog.dismiss(parentFragmentManager)
+                    }
                 }
             }
     }

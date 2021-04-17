@@ -1,5 +1,6 @@
 package com.example.a962n.presentation.wordedit
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +18,7 @@ sealed class Event : BaseViewModel.ViewModelEvent.FeatureViewModelEvent() {
 class WordEditViewModelFactory
 constructor(
     private val editWordUseCase: EditWordUseCase,
-): ViewModelProvider.Factory {
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return WordEditViewModel(editWordUseCase) as T
     }
@@ -35,8 +36,12 @@ constructor(
 
     val textExtra = MutableLiveData<String>()
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
 
     fun editWord() {
+        _isLoading.value = true
 
         val param = EditWordUseCase.Param(
             textName.value,
@@ -45,6 +50,9 @@ constructor(
         )
         useCase(param)
             .onExecute(editWordUseCase::execute)
+            .onFinally {
+                _isLoading.value = false
+            }
             .onSuccess {
                 handleEvent(Event.EditSuccess)
                 reset()
