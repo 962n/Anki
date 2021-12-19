@@ -10,24 +10,24 @@ interface SimpleExecutorPrepare<I> {
 }
 
 private class SimpleExecutorPrepareImpl<Input> constructor(
-    private val input : Input,
-): SimpleExecutorPrepare<Input> {
+    private val input: Input,
+) : SimpleExecutorPrepare<Input> {
 
-    override fun <R> onExecute(onExecute: (Input) ->R): SimpleExecutor<Input, R> {
-        return SimpleExecutorImpl(input,onExecute)
+    override fun <R> onExecute(onExecute: (Input) -> R): SimpleExecutor<Input, R> {
+        return SimpleExecutorImpl(input, onExecute)
     }
 }
 
 interface SimpleExecutor<Input, Result> {
-    fun onComplete(onComplete: (Result) -> Unit) : SimpleExecutor<Input,  Result>
+    fun onComplete(onComplete: (Result) -> Unit): SimpleExecutor<Input, Result>
     fun run()
 }
 
 private class SimpleExecutorImpl<Input, Result>
 constructor(
-    private val input : Input,
+    private val input: Input,
     private var onExecute: ((Input) -> Result)
-) : SimpleExecutor<Input,  Result> {
+) : SimpleExecutor<Input, Result> {
 
     private var onComplete: ((Result) -> Unit)? = null
 
